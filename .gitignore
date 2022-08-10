@@ -9,7 +9,7 @@ _generated/
 .python-version
 node_modules/
 .gradle
-build
+#build
 .idea
 /catbuffer-generators.iml
 /build-old/
