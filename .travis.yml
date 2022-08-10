@@ -1,0 +1,88 @@
+language: python
+python:
+  - '3.7'
+addons:
+  apt:
+    packages:
+    - openjdk-8-jdk
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.cache/pip"
+  - "$HOME/.npm"
+before_install:
+  - python -m pip install --upgrade pip
+  - |
+    if [ -z "${signingKeyId}" ]; then
+      echo "No signing the artifacts"
+    else
+      echo "Signing artifacts"
+      openssl aes-256-cbc -K $encrypted_37d6c1a7ee80_key -iv $encrypted_37d6c1a7ee80_iv -in travis/symbol-sdk-java.gpg.enc -out symbol-sdk-java.gpg -d
+    fi
+install:
+  - pip install -r requirements.txt
+env:
+  global:
+    - DEV_BRANCH=dev
+    - RELEASE_BRANCH=main
+    - POST_RELEASE_BRANCH=main
+    - RELEASE_MESSAGE=release
+before_script:
+  - nvm install --lts
+  - node --version
+  - git clone --depth 1 --branch v1.0.2 https://github.com/nemtech/catbuffer-schemas.git 
+script:
+  - . ./travis/travis-functions.sh
+  - validate_env_variables
+jobs:
+  include:
+    - stage: lint
+      script:
+        - pip install -r lint_requirements.txt
+        - pylint --load-plugins pylint_quotes generators
+        - pycodestyle --config=.pycodestyle .
+
+    - stage: generators
+      name: java generator
+      script:
+        - ./scripts/generate_java.sh
+    - name: typescript generator
+      script:
+        - ./scripts/generate_typescript.sh
+    - name: python
+      script:
+        - ./scripts/generate_python.sh
+    - name: cpp
+      script:
+        - ./scripts/generate_cpp.sh
+
+    - stage: alpha
+      name: java publish alpha
+      script: ./scripts/generate_java.sh publish
+      if: branch = env(DEV_BRANCH) AND type = push
+    - name: typescript publish alpha
+      script: ./scripts/generate_typescript.sh publish
+      if: branch = env(DEV_BRANCH) AND type = push
+    - name: python publish alpha
+      script: ./scripts/generate_python.sh publish
+      if: (branch = env(DEV_BRANCH) OR branch = dev-py) AND type = push
+
+    - stage: release
+      name: java publish release
+      script: ./scripts/generate_java.sh release
+      if: branch = env(RELEASE_BRANCH) AND type = api AND commit_message = env(RELEASE_MESSAGE)
+    - name: typescript publish release
+      script: ./scripts/generate_typescript.sh release
+      if: branch = env(RELEASE_BRANCH) AND type = api AND commit_message = env(RELEASE_MESSAGE)
+    - name: python publish release
+      script: ./scripts/generate_python.sh release
+      if: branch = env(RELEASE_BRANCH) AND type = api AND commit_message = env(RELEASE_MESSAGE)
+
+    - stage: post release
+      name: tag and version upgrade
+      script: /bin/bash travis/travis-functions.sh post_release_version_file
+      if: branch = env(RELEASE_BRANCH) AND type = api AND commit_message = env(RELEASE_MESSAGE)
