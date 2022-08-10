@@ -1,3 +1,7 @@
+# Important
+This is out of date and no longer recommended.
+Please keep this as a reference only.
+
 # catbuffer-generators
 
 [![Build Status](https://api.travis-ci.com/nemtech/catbuffer-generators.svg?branch=main)](https://travis-ci.com/nemtech/catbuffer-generators)
