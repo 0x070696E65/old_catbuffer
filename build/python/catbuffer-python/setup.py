@@ -1,0 +1,29 @@
+from setuptools import setup, find_packages  # noqa: H301
+
+with open('README.md', 'r') as readme_file:
+    README = readme_file.read()
+
+NAME = 'catbuffer'
+VERSION = '1.0.1.20211113.114557a1'
+
+REQUIRES = []
+
+setup(
+    name=NAME,
+    version=VERSION,
+    description='Symbol Catbuffer Builders',
+    author='NEM Group',
+    author_email='dev@nem.software',
+    url='https://github.com/nemtech/catbuffer-generators',
+    keywords=['catbuffer-generators', 'catbuffer', 'builders', 'Symbol Catbuffer Builders'],
+    install_requires=REQUIRES,
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
+    include_package_data=True,
+    license='Apache 2.0',
+    long_description=README,
+    long_description_content_type='text/markdown',
+    classifiers=[
+        'Programming Language :: Python :: 3.7',
+    ]
+)

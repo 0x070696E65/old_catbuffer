@@ -1,0 +1,50 @@
+import { AccountKeyTypeFlagsDto } from './AccountKeyTypeFlagsDto';
+import { AccountStateFormatDto } from './AccountStateFormatDto';
+import { AccountTypeDto } from './AccountTypeDto';
+import { AddressDto } from './AddressDto';
+import { HeightActivityBucketsBuilder } from './HeightActivityBucketsBuilder';
+import { HeightDto } from './HeightDto';
+import { ImportanceSnapshotBuilder } from './ImportanceSnapshotBuilder';
+import { KeyDto } from './KeyDto';
+import { MosaicBuilder } from './MosaicBuilder';
+import { PinnedVotingKeyBuilder } from './PinnedVotingKeyBuilder';
+import { Serializer } from './Serializer';
+import { StateHeaderBuilder, StateHeaderBuilderParams } from './StateHeaderBuilder';
+export interface AccountStateBuilderParams extends StateHeaderBuilderParams {
+    address: AddressDto;
+    addressHeight: HeightDto;
+    publicKey: KeyDto;
+    publicKeyHeight: HeightDto;
+    accountType: AccountTypeDto;
+    format: AccountStateFormatDto;
+    supplementalPublicKeysMask: AccountKeyTypeFlagsDto[];
+    linkedPublicKey?: KeyDto;
+    nodePublicKey?: KeyDto;
+    vrfPublicKey?: KeyDto;
+    votingPublicKeys: PinnedVotingKeyBuilder[];
+    importanceSnapshots?: ImportanceSnapshotBuilder;
+    activityBuckets?: HeightActivityBucketsBuilder;
+    balances: MosaicBuilder[];
+}
+export declare class AccountStateBuilder extends StateHeaderBuilder implements Serializer {
+    readonly address: AddressDto;
+    readonly addressHeight: HeightDto;
+    readonly publicKey: KeyDto;
+    readonly publicKeyHeight: HeightDto;
+    readonly accountType: AccountTypeDto;
+    readonly format: AccountStateFormatDto;
+    readonly supplementalPublicKeysMask: AccountKeyTypeFlagsDto[];
+    readonly linkedPublicKey?: KeyDto;
+    readonly nodePublicKey?: KeyDto;
+    readonly vrfPublicKey?: KeyDto;
+    readonly votingPublicKeys: PinnedVotingKeyBuilder[];
+    readonly importanceSnapshots?: ImportanceSnapshotBuilder;
+    readonly activityBuckets?: HeightActivityBucketsBuilder;
+    readonly balances: MosaicBuilder[];
+    constructor({ version, address, addressHeight, publicKey, publicKeyHeight, accountType, format, supplementalPublicKeysMask, linkedPublicKey, nodePublicKey, vrfPublicKey, votingPublicKeys, importanceSnapshots, activityBuckets, balances, }: AccountStateBuilderParams);
+    static loadFromBinary(payload: Uint8Array): AccountStateBuilder;
+    static createAccountStateBuilderHighValue(version: number, address: AddressDto, addressHeight: HeightDto, publicKey: KeyDto, publicKeyHeight: HeightDto, accountType: AccountTypeDto, supplementalPublicKeysMask: AccountKeyTypeFlagsDto[], linkedPublicKey: KeyDto, nodePublicKey: KeyDto, vrfPublicKey: KeyDto, votingPublicKeys: PinnedVotingKeyBuilder[], importanceSnapshots: ImportanceSnapshotBuilder, activityBuckets: HeightActivityBucketsBuilder, balances: MosaicBuilder[]): AccountStateBuilder;
+    static createAccountStateBuilderRegular(version: number, address: AddressDto, addressHeight: HeightDto, publicKey: KeyDto, publicKeyHeight: HeightDto, accountType: AccountTypeDto, supplementalPublicKeysMask: AccountKeyTypeFlagsDto[], linkedPublicKey: KeyDto, nodePublicKey: KeyDto, vrfPublicKey: KeyDto, votingPublicKeys: PinnedVotingKeyBuilder[], balances: MosaicBuilder[]): AccountStateBuilder;
+    get size(): number;
+    serialize(): Uint8Array;
+}
